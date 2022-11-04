@@ -9,10 +9,10 @@ import (
 )
 
 /*
-type Gopher struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
+	type Gopher struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
 */
 type User struct {
 	ID       string `json:"id"`
@@ -24,18 +24,18 @@ type User struct {
 }
 
 /*
-var gophers = []Gopher{
-	{ID: "1", Name: "Gogo"},
-	{ID: "2", Name: "Gofoo"},
-	{ID: "3", Name: "Gobla"},
-	{ID: "4", Name: "Gofee"},
-	{ID: "5", Name: "Golee"},
-	{ID: "6", Name: "Goblin"},
-	{ID: "7", Name: "Goshee"},
-	{ID: "8", Name: "Gocee"},
-	{ID: "9", Name: "Gonee"},
-	{ID: "10", Name: "Googoo"},
-}
+	var gophers = []Gopher{
+		{ID: "1", Name: "Gogo"},
+		{ID: "2", Name: "Gofoo"},
+		{ID: "3", Name: "Gobla"},
+		{ID: "4", Name: "Gofee"},
+		{ID: "5", Name: "Golee"},
+		{ID: "6", Name: "Goblin"},
+		{ID: "7", Name: "Goshee"},
+		{ID: "8", Name: "Gocee"},
+		{ID: "9", Name: "Gonee"},
+		{ID: "10", Name: "Googoo"},
+	}
 */
 var users = []User{
 	{ID: "1", Nick: "GoMaster", Email: "gomaster@gmail.com", Password: "6969Olaboga", Points: 0},
@@ -68,6 +68,16 @@ func getUserByID(id string) (*User, error) {
 
 }
 
+func userByID(c *gin.Context) {
+	id := c.Param("id")
+	user, err := getUserByID(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found."})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, user)
+}
+
 func addGopher(c *gin.Context) {
 	id, ok := c.GetQuery("id")
 
@@ -88,7 +98,8 @@ func main() {
 	router := gin.Default()
 	router.POST("/users", createUser)
 	router.GET("/users", getRanking)
-	router.PUT("/user/:id", addGopher)
+	router.GET("/users/:id", userByID)
+	router.PATCH("/score", addGopher)
 
 	router.Run("localhost:8000")
 }
